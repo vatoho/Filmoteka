@@ -1,0 +1,557 @@
+definitions:
+  github_com_ilyushkaaa_Filmoteka_internal_actors_entity.Actor:
+    properties:
+      birthday:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      surname:
+        type: string
+    type: object
+  github_com_ilyushkaaa_Filmoteka_internal_dto.ActorAdd:
+    properties:
+      birthday:
+        type: string
+      gender:
+        type: string
+      name:
+        type: string
+      surname:
+        type: string
+    type: object
+  github_com_ilyushkaaa_Filmoteka_internal_dto.ActorUpdate:
+    properties:
+      birthday:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      surname:
+        type: string
+    type: object
+  github_com_ilyushkaaa_Filmoteka_internal_dto.ActorWithFilms:
+    properties:
+      actor:
+        $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_actors_entity.Actor'
+      films:
+        items:
+          $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_films_entity.Film'
+        type: array
+    type: object
+  github_com_ilyushkaaa_Filmoteka_internal_dto.AuthRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  github_com_ilyushkaaa_Filmoteka_internal_dto.AuthResponse:
+    properties:
+      session_id:
+        type: string
+    type: object
+  github_com_ilyushkaaa_Filmoteka_internal_films_entity.Film:
+    properties:
+      dateOfRelease:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      rating:
+        type: number
+    type: object
+info:
+  contact: {}
+  description: бэкенд приложения “Фильмотека”, который предоставляет REST API для
+    управления базой данных фильмов.
+  title: Фильмотека
+  version: "1.0"
+paths:
+  /api/v1/actor/{ACTOR_ID}:
+    get:
+      consumes:
+      - application/json
+      description: Получить информацию об актере по его ID с информацией о фильмах,
+        в которых он снимался
+      parameters:
+      - description: ID актера
+        in: path
+        name: ACTOR_ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_dto.ActorWithFilms'
+        "400":
+          description: Идентификатор актера передан в неверном формате
+          schema:
+            type: string
+        "404":
+          description: Актёр не найден
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      tags:
+      - actors
+  /api/v1/actors:
+    get:
+      consumes:
+      - application/json
+      description: Получить список всех актеров
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_dto.ActorWithFilms'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      tags:
+      - actors
+  /api/v1/admin/actor:
+    post:
+      consumes:
+      - application/json
+      description: Данный метод позволяет добавить нового актера в систему.
+      parameters:
+      - description: Данные о новом актере
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_dto.ActorAdd'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные добавленного актера
+          schema:
+            $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_dto.ActorAdd'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            type: string
+        "401":
+          description: Пользователь не аутентифицирован
+          schema:
+            type: string
+        "403":
+          description: Запрещено для данного пользователя
+          schema:
+            type: string
+        "422":
+          description: Ошибка валидации данных
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      tags:
+      - actors
+    put:
+      consumes:
+      - application/json
+      description: Данный метод позволяет обновить информацию об актере.
+      parameters:
+      - description: Данные для обновления актера
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_dto.ActorUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Обновленные данные об актере
+          schema:
+            $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_dto.ActorUpdate'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            type: string
+        "401":
+          description: Пользователь не аутентифицирован
+          schema:
+            type: string
+        "403":
+          description: Запрещено для данного пользователя
+          schema:
+            type: string
+        "422":
+          description: Ошибка валидации данных
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      tags:
+      - actors
+  /api/v1/admin/actor/{ACTOR_ID}:
+    delete:
+      consumes:
+      - application/json
+      description: Данный метод позволяет удалить актера по его идентификатору.
+      parameters:
+      - description: Идентификатор актера
+        in: path
+        name: ACTOR_ID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное удаление
+          schema:
+            type: string
+        "400":
+          description: Ошибка в запросе
+          schema:
+            type: string
+        "401":
+          description: Пользователь не аутентифицирован
+          schema:
+            type: string
+        "403":
+          description: Запрещено для данного пользователя
+          schema:
+            type: string
+        "404":
+          description: Актер не найден
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      tags:
+      - actors
+  /api/v1/admin/film:
+    post:
+      consumes:
+      - application/json
+      description: Данный метод позволяет добавить новый фильм в систему.
+      parameters:
+      - description: Данные о новом фильме
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_films_entity.Film'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные добавленного фильма
+          schema:
+            $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_films_entity.Film'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            type: string
+        "401":
+          description: Пользователь не аутентифицирован
+          schema:
+            type: string
+        "403":
+          description: Запрещено для данного пользователя
+          schema:
+            type: string
+        "422":
+          description: Ошибка валидации данных
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - CookieAuth: []
+      tags:
+      - films
+    put:
+      consumes:
+      - application/json
+      description: Данный метод позволяет обновить информацию о фильме.
+      parameters:
+      - description: Данные для обновления фильма
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_films_entity.Film'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Обновленные данные о фильме
+          schema:
+            $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_films_entity.Film'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            type: string
+        "401":
+          description: Пользователь не аутентифицирован
+          schema:
+            type: string
+        "403":
+          description: Запрещено для данного пользователя
+          schema:
+            type: string
+        "422":
+          description: Ошибка валидации данных
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - CookieAuth: []
+      tags:
+      - films
+  /api/v1/admin/film/{FILM_ID}:
+    delete:
+      consumes:
+      - application/json
+      description: Данный метод позволяет удалить фильм по его идентификатору.
+      parameters:
+      - description: Идентификатор фильма
+        in: path
+        name: FILM_ID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное удаление
+          schema:
+            type: string
+        "400":
+          description: Ошибка в запросе
+          schema:
+            type: string
+        "401":
+          description: Пользователь не аутентифицирован
+          schema:
+            type: string
+        "403":
+          description: Запрещено для данного пользователя
+          schema:
+            type: string
+        "404":
+          description: Фильм не найден
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - CookieAuth: []
+      tags:
+      - films
+  /api/v1/film/{FILM_ID}:
+    get:
+      consumes:
+      - application/json
+      description: Получить информацию о фильме по его идентификатору
+      parameters:
+      - description: ID актера
+        in: path
+        name: FILM_ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_films_entity.Film'
+        "400":
+          description: Идентификатор фильма передан в неверном формате
+          schema:
+            type: string
+        "404":
+          description: Фильм не найден
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      tags:
+      - films
+  /api/v1/films:
+    get:
+      consumes:
+      - application/json
+      description: Получить список всех фильмов
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_films_entity.Film'
+            type: array
+        "400":
+          description: Передан неверный параметр сортировки
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      tags:
+      - films
+  /api/v1/films/search/{SEARCH_STR}:
+    get:
+      consumes:
+      - application/json
+      description: Данный метод позволяет получить список фильмов, соответствующих
+        поисковому запросу.
+      parameters:
+      - description: Строка поиска
+        in: path
+        name: SEARCH_STR
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список фильмов
+          schema:
+            items:
+              $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_films_entity.Film'
+            type: array
+        "404":
+          description: Фильмы не найдены
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      tags:
+      - films
+  /api/v1/login:
+    post:
+      consumes:
+      - application/json
+      description: Данный метод позволяет пользователям войти в систему, используя
+        свои учетные данные.
+      parameters:
+      - description: Данные пользователя для входа
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_dto.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный вход, получен идентификатор сессии
+          schema:
+            $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_dto.AuthResponse'
+        "401":
+          description: Неверные учетные данные
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      tags:
+      - users
+  /api/v1/logout:
+    post:
+      consumes:
+      - application/json
+      description: Данный метод позволяет пользователям выйти из системы, завершая
+        сеанс.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный выход
+          schema:
+            type: string
+        "401":
+          description: Неверный или отсутствующий токен аутентификации
+          schema:
+            type: string
+        "404":
+          description: Сеанс не найден
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - CookieAuth: []
+      tags:
+      - users
+  /api/v1/register:
+    post:
+      consumes:
+      - application/json
+      description: Данный метод позволяет новым пользователям зарегистрироваться в
+        системе.
+      parameters:
+      - description: Данные нового пользователя
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_dto.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешная регистрация, получен идентификатор сессии
+          schema:
+            $ref: '#/definitions/github_com_ilyushkaaa_Filmoteka_internal_dto.AuthResponse'
+        "422":
+          description: Пользователь уже существует
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      tags:
+      - users
+swagger: "2.0"
